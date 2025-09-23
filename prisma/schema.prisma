@@ -1,0 +1,117 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+} 
+
+model User {
+  id            String          @id @default(cuid())
+  // slug: ページURL用の文字列
+  slug          String          @unique @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  password      String? // credentials
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookmarks Bookmark[]
+  files File[]
+}
+ 
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([provider, providerAccountId])
+}
+ 
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@id([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
+
+model Bookmark {
+  id          String   @id @default(cuid())
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  url         String   @db.VarChar(400)
+  title       String?  @db.VarChar(100)
+  description String?  @db.VarChar(400)
+  siteName    String?  @db.VarChar(100)
+  type        String?  @db.VarChar(50)
+  comment     String?  @db.Text
+  imageFileId String?
+
+  user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageFile   File? @relation(fields: [imageFileId], references: [id], onDelete: SetNull)
+}
+
+model File {
+  id         String     @id @default(cuid())
+  // ファイル名（バケット名は含まない）
+  key        String     @db.VarChar(100) @unique
+  type       String     @db.VarChar(50)
+  size       Int
+  userId     String
+  bookmarkId String[]
+  createdAt  DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookmarks  Bookmark[]
+}
+
+

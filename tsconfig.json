@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": "src/",
+    "paths": {
+      "@/*": ["*"],
+      "@/actions/*": ["actions/*"],
+      "@/app": ["app/*"],
+      "@/components/*": ["components/*"],
+      "@/di/*": ["di/*"],
+      "@/domains/*": ["domains/*"],
+      "@/lib/*": ["lib/*"],
+      "@/schema/*": ["schema/*"],
+      "@/styles/*": ["styles/*"],
+      "@/utils/*": ["utils/*"],
+      "@/shadcn/*": ["components/lib/shadcn/ui/*"]
+    },
+    "target": "ES2017",
+    "types": ["next", "node"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,20 @@
+.tmp
+.DS_Store
+*.pem
+node_modules/**/*
+.next/**/*
+out/**/*
+build/**/*
+dist/**/*
+# npm cache
+.npm-cache
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# vercel
+.vercel
+# typescript
+*.tsbuildinfo
+next-env.d.ts

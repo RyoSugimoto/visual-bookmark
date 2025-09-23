@@ -1,0 +1,18 @@
+{
+	"name": "Node.js Application",
+	"dockerComposeFile": "compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+		"Prisma.prisma",
+		"bradlc.vscode-tailwindcss",
+		"streetsidesoftware.code-spell-checker",
+		"biomejs.biome",
+		"dbaeumer.vscode-eslint"
+	]
+    }
+  }
+}
