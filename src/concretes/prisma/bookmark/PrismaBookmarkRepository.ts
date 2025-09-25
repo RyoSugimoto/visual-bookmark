@@ -108,6 +108,7 @@ export default class PrismaBookmarkRepository implements IBookmarkRepository {
       url: url.value,
       title: title.value,
       description: description.value,
+      imageFileId: null,
     };
 
     if (hasImage) {

@@ -1,6 +1,3 @@
-'use server';
-
-import '@/di';
 import { container } from 'tsyringe';
 import GoogleSignInService from '@/services/auth/google-auth-service/GoogleAuthService';
 

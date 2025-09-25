@@ -1,9 +1,12 @@
-import '@/di';
 import { container } from 'tsyringe';
 import { type Action, ActionResponse } from '@/actions/shared';
 import UserDto from '@/actions/user/shared/UserDto';
+import {
+  ERROR_CODES,
+  type ErrorCode,
+  type ResponseData,
+} from '@/schema/auth/session-user-schema';
 import SessionUserService from '@/services/auth/session-user-service/SessionUserService';
-import { ERROR_CODES, type ErrorCode, type ResponseData } from './modules';
 
 export const getSessionUser: Action<
   null,

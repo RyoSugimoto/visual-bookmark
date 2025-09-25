@@ -1,14 +1,11 @@
 'use client';
 
 import { Check } from 'lucide-react';
-import { useActionState, useEffect, useState } from 'react';
-import {
-  type CredentialsSignUpErrorCode as ErrorCode,
-  handleActionStateCredentialsSignUp,
-  type CredentialsSignUpState as State,
-} from '@/app/action-handlers/auth';
+import { useActionState, useState } from 'react';
+import { handleActionState } from '@/app/action-handlers/auth/credentials-sign-up/handle-action-state';
 import { Message } from '@/components/common';
 import { FormItem, FormStack, FormWrapper } from '@/components/form';
+import type { ErrorCode } from '@/schema/auth/credentials-sign-up-schema';
 import { Button } from '@/shadcn/button';
 import { Input } from '@/shadcn/input';
 import { Label } from '@/shadcn/label';
@@ -28,37 +25,28 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
 
 type RegisterFormProps = {
   init?: {
-    email: string;
+    email?: string;
   };
 };
 
-export default function RegisterForm({ init }: RegisterFormProps) {
+export default function RegisterForm({ init = {} }: RegisterFormProps) {
   const formId = createUuidV4();
 
-  const [state, action, isPending] = useActionState<State, FormData>(
-    handleActionStateCredentialsSignUp,
-    {
-      success: false,
-      inputs: {
-        email: init?.email || '',
-      },
-      errorCode: null,
+  const [state, action, isPending] = useActionState<
+    ReturnType<typeof handleActionState>,
+    FormData
+  >(handleActionState, {
+    status: 'default',
+    data: {
+      email: init?.email || '',
     },
-  );
+  });
 
   const [email, setEmail] = useState<string>(
-    state.success === false ? state.inputs.email : '',
+    state.status === 'error' ? state.data.email : '',
   );
 
-  const [message, setMessage] = useState<string>(
-    state.success === false ? ERROR_MESSAGES[state.errorCode] : '',
-  );
-
-  useEffect(() => {
-    if (state.success === false) {
-      setMessage(ERROR_MESSAGES[state.errorCode]);
-    }
-  }, [state]);
+  const [displayMessage, setDisplayMessage] = useState<boolean>(true);
 
   return (
     <FormWrapper
@@ -91,15 +79,20 @@ export default function RegisterForm({ init }: RegisterFormProps) {
           </FormItem>
 
           <div>
-            <Message
-              className="py-2"
-              message={message}
-              handleClose={() => setMessage('')}
-              variant="error"
-            />
             <Button className="gap-2" type="submit" disabled={isPending}>
               <Check size="1em" /> 新規登録
             </Button>
+
+            <Message
+              className="py-2"
+              message={
+                displayMessage && state.status === 'error'
+                  ? ERROR_MESSAGES[state.errorCode]
+                  : ''
+              }
+              handleClose={() => setDisplayMessage(false)}
+              variant="error"
+            />
           </div>
         </FormStack>
       </form>

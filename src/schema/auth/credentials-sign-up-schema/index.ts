@@ -1,11 +1,6 @@
-import type z from 'zod';
-import type { credentialsSignUpResponseSchema } from '@/schema';
+import z from 'zod';
 
 export const PREFIX = 'credentials-sign-up';
-
-/**
- * サーバーアクションが返すエラーコード
- */
 
 export const ERROR_CODES = {
   inputOmission: `${PREFIX}-input-omission`,
@@ -15,14 +10,17 @@ export const ERROR_CODES = {
   failure: `${PREFIX}-failure`,
 } as const;
 
+export const credentialsSignUpRequestSchema = z.object({
+  email: z.email(),
+  password: z.string(),
+});
+
+export const credentialsSignUpResponseSchema = z.object({
+  email: z.string().nullable(),
+});
+
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
-/**
- * サーバーアクション関数用
- */
+export type RequestData = z.infer<typeof credentialsSignUpRequestSchema>;
 
 export type ResponseData = z.infer<typeof credentialsSignUpResponseSchema>;
-
-/**
- * `useActionState` ハンドラ用
- */

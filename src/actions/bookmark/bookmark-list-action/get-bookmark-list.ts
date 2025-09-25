@@ -1,6 +1,3 @@
-'use server';
-
-import '@/di';
 import { container } from 'tsyringe';
 import { BookmarkDto } from '@/actions/bookmark/shared';
 import { type Action, ActionResponse } from '@/actions/shared';

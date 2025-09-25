@@ -1,12 +1,13 @@
-'use server';
-
-import '@/di';
 import { container } from 'tsyringe';
 import { type Action, ActionResponse } from '@/actions/shared';
 import { EmailAddress } from '@/domains/models';
 import { Credentials, Password } from '@/domains/models/credentials';
+import {
+  ERROR_CODES,
+  type ErrorCode,
+  type ResponseData,
+} from '@/schema/auth/credentials-sign-in-schema';
 import CredentialsSignInService from '@/services/auth/credentials-sign-in-service/CredentialsSignInService';
-import { ERROR_CODES, type ErrorCode, type ResponseData } from '.';
 
 export const signInWithCredentials: Action<
   FormData,

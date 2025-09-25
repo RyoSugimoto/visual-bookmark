@@ -1,3 +1,3 @@
 import 'reflect-metadata';
-import './di-node';
-import './di-common';
+import './register-common';
+import './register-nodejs';

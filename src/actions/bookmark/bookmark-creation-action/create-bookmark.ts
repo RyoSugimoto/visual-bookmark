@@ -23,7 +23,9 @@ export const createBookmark: Action<FormData, ResponseData, ErrorCode> = async (
 ) => {
   const send = ActionResponse.createResponseObject<ResponseData, ErrorCode>;
 
-  const { success, data } = requestDataSchema.safeParse(formData.entries());
+  const formDataObject = Object.fromEntries(formData.entries());
+
+  const { success, data } = requestDataSchema.safeParse(formDataObject);
 
   if (!success) {
     return send(false, null, ERROR_CODES.inputOmission);

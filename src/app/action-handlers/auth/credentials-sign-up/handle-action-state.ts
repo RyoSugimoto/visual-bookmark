@@ -1,20 +1,27 @@
 'use server';
 
+import '@/di';
 import { redirect } from 'next/navigation';
-import { signUpWithCredentials } from '@/actions/auth/credentials-sign-up-action';
-import type { HandleActionState } from '../shared';
-import type { State } from './schema';
+import { signUpWithCredentials } from '@/actions/auth/credentials-sign-up-action/sign-up-with-credentials';
+import type {
+  ActionState,
+  HandleActionState,
+} from '@/app/action-handlers/shared';
+import type {
+  ErrorCode,
+  ResponseData,
+} from '@/schema/auth/credentials-sign-up-schema';
 
-export const handleActionState: HandleActionState<State, FormData> = async (
-  prevState,
-  formData,
-): Promise<State> => {
+export const handleActionState: HandleActionState<
+  ActionState<ResponseData, ErrorCode>,
+  FormData
+> = async (prevState, formData) => {
   const response = await signUpWithCredentials(formData);
 
   if (!response.success) {
     return {
-      success: false,
-      inputs: prevState.success === false ? prevState.inputs : {},
+      status: 'error',
+      input: prevState.data,
       errorCode: response.errorCode,
     };
   }

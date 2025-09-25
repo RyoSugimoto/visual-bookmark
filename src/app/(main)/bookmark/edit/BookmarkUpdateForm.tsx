@@ -7,7 +7,10 @@ import { OgpFetcher } from '@/app/shared/components/ogp-fetcher';
 import { Message } from '@/components/common';
 import ImageUploader from '@/components/common/image-uploader/ImageUploader';
 import { FormItem, FormStack, FormWrapper } from '@/components/form';
-import { type ErrorCode, FIELD_NAMES } from '@/schema/bookmark/bookmark-update-schema';
+import {
+  type ErrorCode,
+  FIELD_NAMES,
+} from '@/schema/bookmark/bookmark-update-schema';
 import { Button } from '@/shadcn/button';
 import { Input } from '@/shadcn/input';
 import { Label } from '@/shadcn/label';
@@ -104,7 +107,6 @@ export default function BookmarkUpdateForm({
 
             <OgpFetcher
               url={url}
-              getUrl={() => url}
               toConfirm={() => {
                 return title !== '' || description !== '';
               }}
@@ -196,14 +198,15 @@ export default function BookmarkUpdateForm({
           </FormItem>
 
           <FormItem className="py-2">
+            <Button type="submit" disabled={disable}>
+              更新する
+            </Button>
+
             <Message
               message={message}
               handleClose={() => setMessage('')}
               variant="error"
             />
-            <Button type="submit" disabled={disable}>
-              更新する
-            </Button>
           </FormItem>
         </FormStack>
       </form>

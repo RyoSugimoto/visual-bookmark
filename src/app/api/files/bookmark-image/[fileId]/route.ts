@@ -1,3 +1,4 @@
+import '@/di';
 import { type NextRequest, NextResponse } from 'next/server';
 import { readBookmarkImage } from '@/actions/storage/bookmark-image-reading-action/read-bookmark-image';
 import type { RouteContext } from '@/app/shared/types/next';

@@ -2,15 +2,11 @@
 
 import { LogIn, Send } from 'lucide-react';
 import Link from 'next/link';
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useState } from 'react';
 import { FaGoogle } from 'react-icons/fa';
-import {
-  type CredentialsSignInErrorCode as ErrorCode,
-  handleActionStateCredentialsSignIn as handleActionState,
-  handleSignInWithGoogle,
-  handleSignInWithMagicLink,
-  type CredentialsSignInState as State,
-} from '@/app/action-handlers/auth';
+import { handleActionState } from '@/app/action-handlers/auth/credentials-sign-in/handle-action-state';
+import { handleSignInWithGoogle } from '@/app/action-handlers/auth/google-sign-in/handle-action';
+import { handleSignInWithMagicLink } from '@/app/action-handlers/auth/magic-link-sign-in/handle-action';
 import { Message } from '@/components/common';
 import {
   FormItem,
@@ -18,6 +14,7 @@ import {
   FormStack,
   FormWrapper,
 } from '@/components/form';
+import type { ErrorCode } from '@/schema/auth/credentials-sign-in-schema';
 import { Button } from '@/shadcn/button';
 import { Input } from '@/shadcn/input';
 import { Label } from '@/shadcn/label';
@@ -32,37 +29,28 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
 
 type LoginFormProps = {
   init?: {
-    email: string;
+    email?: string;
   };
 };
 
-export default function LoginForm({ init }: LoginFormProps) {
+export default function LoginForm({ init = {} }: LoginFormProps) {
   const formId = createUuidV4();
 
-  const [state, action, isPending] = useActionState<State, FormData>(
-    handleActionState,
-    {
-      success: false,
-      inputs: {
-        email: init?.email || '',
-      },
-      errorCode: null,
+  const [state, action, isPending] = useActionState<
+    ReturnType<typeof handleActionState>,
+    FormData
+  >(handleActionState, {
+    status: 'default',
+    data: {
+      email: init?.email || '',
     },
-  );
+  });
 
   const [email, setEmail] = useState<string>(
-    state.success === false ? state.inputs?.email || '' : '',
+    state.status === 'error' ? state.data?.email || '' : '',
   );
 
-  const [message, setMessage] = useState<string>(
-    state.success === false ? ERROR_MESSAGES[state.errorCode] : '',
-  );
-
-  useEffect(() => {
-    if (state.success === false) {
-      setMessage(ERROR_MESSAGES[state.errorCode]);
-    }
-  }, [state]);
+  const [displayMessage, setDisplayMessage] = useState<boolean>(true);
 
   return (
     <FormWrapper
@@ -140,7 +128,7 @@ export default function LoginForm({ init }: LoginFormProps) {
                   value={email}
                   onChange={event => {
                     setEmail(event.target.value);
-                    setMessage('');
+                    setDisplayMessage(false);
                   }}
                 />
               </FormItem>
@@ -158,22 +146,27 @@ export default function LoginForm({ init }: LoginFormProps) {
                   autoComplete=""
                   placeholder=""
                   onChange={() => {
-                    setMessage('');
+                    setDisplayMessage(false);
                   }}
                 />
               </FormItem>
             </FormStack>
 
             <FormItem>
-              <Message
-                className="py-2"
-                message={message}
-                handleClose={() => setMessage('')}
-                variant="error"
-              />
               <Button type="submit" disabled={isPending} className="gap-2">
                 <LogIn size="1em" /> ログイン
               </Button>
+
+              <Message
+                className="py-2"
+                message={
+                  displayMessage && state.status === 'error'
+                    ? ERROR_MESSAGES[state.errorCode]
+                    : ''
+                }
+                handleClose={() => setDisplayMessage(false)}
+                variant="error"
+              />
             </FormItem>
           </form>
         </section>

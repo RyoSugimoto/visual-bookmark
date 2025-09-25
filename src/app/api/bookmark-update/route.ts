@@ -1,3 +1,4 @@
+import '@/di';
 import { type NextRequest, NextResponse } from 'next/server';
 import { updateBookmark } from '@/actions/bookmark/bookmark-update-action/update-bookmark';
 

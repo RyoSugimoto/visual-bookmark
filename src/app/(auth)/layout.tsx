@@ -1,6 +1,6 @@
-import Footer from '@/components/layout/Footer'
-import Stack from '@/components/layout/Stack'
-import Logo from '@/components/brand/Logo'
+import Footer from '@/app/shared/components/layout/Footer';
+import Logo from '@/components/brand/Logo';
+import Stack from '@/components/layout/Stack';
 
 export default function AuthLayout({ children }) {
   return (
@@ -11,13 +11,9 @@ export default function AuthLayout({ children }) {
         </div>
       </header>
       <main>
-        <div
-          className="container mx-auto max-w-screen-sm px-4"
-        >
-          {children}
-        </div>
+        <div className="container mx-auto max-w-screen-sm px-4">{children}</div>
       </main>
       <Footer />
     </Stack>
-  )
+  );
 }

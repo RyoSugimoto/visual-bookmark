@@ -43,19 +43,11 @@ export default defineConfig([
           {
             // `app` ディレクトリ以下のファイルで、何が `import` できるのかを設定
             from: 'app',
-            allow: ['action', 'action-handler', 'app', 'component', 'schema', 'style', 'util'],
-          },
-          {
-            from: 'action-handler',
-            allow: ['app', 'action', 'schema', 'action-handler', 'util'],
-          },
-          {
-            from: 'api',
-            allow: ['api', 'action', 'schema', 'util'],
+            allow: ['action', 'action-handler', 'app', 'component', 'di', 'schema', 'style', 'util'],
           },
           {
             from: 'action',
-            allow: ['action', 'di', 'domain', 'schema', 'service', 'util'],
+            allow: ['action', 'domain', 'schema', 'service', 'util'],
           },
           {
             from: 'concrete',
@@ -83,7 +75,7 @@ export default defineConfig([
           },
           {
             from: 'middleware',
-            allow: ['domain', 'service', 'util']
+            allow: ['action', 'di', 'schema', 'util']
           },
           {
             from: 'instrumentation',
@@ -126,16 +118,8 @@ export default defineConfig([
           pattern: 'src/actions',
         },
         {
-          type: 'action-handler',
-          pattern: 'src/app/action-handlers',
-        },
-        {
-          type: 'api',
-          pattern: 'src/app/api',
-        },
-        {
           type: 'app',
-          pattern: 'src/app{!/api,!/action-handlers}',
+          pattern: 'src/app',
         },
         {
           type: 'component',

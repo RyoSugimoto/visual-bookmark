@@ -1,5 +1,5 @@
 import type z from 'zod';
-import type { userResponseSchema } from '@/schema';
+import type { userResponseSchema } from '@/schema/user';
 
 export const PREFIX = 'get-session';
 

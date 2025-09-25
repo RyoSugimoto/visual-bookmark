@@ -1,15 +1,16 @@
-'use server';
-
-import '@/di';
 import { container } from 'tsyringe';
 import { type Action, ActionResponse } from '@/actions/shared';
 import { EmailAddress } from '@/domains/models';
 import { Password } from '@/domains/models/credentials';
 import { HashedPassword } from '@/domains/models/user';
+import {
+  ERROR_CODES,
+  type ErrorCode,
+  type ResponseData,
+} from '@/schema/auth/credentials-sign-up-schema';
 import CredentialsRegistrationService from '@/services/auth/credentials-registration-service/CredentialsRegistrationService';
 import ServiceError from '@/services/shared/ServiceError';
 import { makeHash } from '@/utils';
-import { ERROR_CODES, type ErrorCode, type ResponseData } from './modules';
 
 export const signUpWithCredentials: Action<
   FormData,

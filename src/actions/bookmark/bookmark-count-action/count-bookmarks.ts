@@ -1,4 +1,3 @@
-import '@/di';
 import { container } from 'tsyringe';
 import { type Action, ActionResponse } from '@/actions/shared';
 import {

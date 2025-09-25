@@ -1,6 +1,3 @@
-'use server';
-
-import '@/di';
 import { container } from 'tsyringe';
 import { EmailAddress } from '@/domains/models';
 import MagicLinkSignInService from '@/services/auth/magic-link-auth-service/MagicLinkAuthService';

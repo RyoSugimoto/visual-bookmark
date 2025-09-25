@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { RedirectType, redirect } from 'next/navigation';
 import { countBookmarks } from '@/actions/bookmark/bookmark-count-action/count-bookmarks';
 import { getBookmarkList } from '@/actions/bookmark/bookmark-list-action/get-bookmark-list';
@@ -6,6 +7,15 @@ import { BookmarkList } from '@/app/shared/components/bookmark-list';
 import { Pagination } from '@/app/shared/components/pagination';
 import type { PageProps } from '@/app/shared/types/next';
 import { getBookmarkListCommandSchema } from '@/schema/bookmark/bookmark-list-schema';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: `ブックマーク一覧 | Visual Bookmark`,
+    openGraph: {
+      images: [],
+    },
+  };
+}
 
 export default async function HomePage({ searchParams }: PageProps) {
   const params = await searchParams;

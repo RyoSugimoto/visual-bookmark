@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { type User as AuthenticatedUser, CredentialsSignin } from 'next-auth';
 import { container } from 'tsyringe';
 import AuthjsAuthorizationService from './AuthjsAuthorizationService';

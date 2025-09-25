@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/actions/auth/session-user-action';
-import { signOut } from '@/actions/auth/sign-out-action';
-import LogoutButton from '@/components/auth/LogoutButton';
+import { getSessionUser } from '@/actions/auth/session-user-action/get-session-user';
+import LogoutButton from '@/app/shared/components/auth/LogoutButton';
 
 export default async function Page() {
   const response = await getSessionUser();
@@ -28,7 +27,7 @@ export default async function Page() {
       </dl>
 
       <div className="mt-8">
-        <LogoutButton signOutAction={signOut} />
+        <LogoutButton />
       </div>
     </div>
   );

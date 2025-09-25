@@ -1,17 +1,17 @@
 'use client';
 
-import 'reflect-metadata';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import type {
-  ErrorCode,
-  ResponseData,
-} from '@/actions/bookmark/bookmark-creation-action';
 import type { ActionResponseObject } from '@/actions/shared';
 import { OgpFetcher } from '@/app/shared/components/ogp-fetcher';
 import { Message } from '@/components/common';
 import ImageUploader from '@/components/common/image-uploader/ImageUploader';
 import { FormItem, FormStack, FormWrapper } from '@/components/form';
+import {
+  type ErrorCode,
+  FIELD_NAMES,
+  type ResponseData,
+} from '@/schema/bookmark/bookmark-creation-schema';
 import { Button } from '@/shadcn/button';
 import { Input } from '@/shadcn/input';
 import { Label } from '@/shadcn/label';
@@ -42,11 +42,12 @@ export default function BookmarkCreationForm({
   formId,
 }: BookmarkCreationFormProps) {
   /** フォームの入力値 */
-  const [url, setUrl] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [images, setImages] = useState<File[]>([]);
+  const [url, setUrl] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [images, setImages] = useState<File[] | null>(null);
   const [disable, setDisable] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   /** `ImageUploader` 内の画像選択ダイアログを表示するボタンへの参照 */
   const imageUploaderRef = useRef<HTMLButtonElement | null>(null);
@@ -67,12 +68,12 @@ export default function BookmarkCreationForm({
 
           const formData = new FormData();
 
-          formData.append('url', url);
-          formData.append('title', title);
-          formData.append('description', description);
+          formData.append(FIELD_NAMES.url, url);
+          formData.append(FIELD_NAMES.title, title);
+          formData.append(FIELD_NAMES.description, description);
 
           if (0 < images.length) {
-            formData.append('image', images[0]);
+            formData.append(FIELD_NAMES.imageFile, images[0]);
           }
 
           setDisable(true);
@@ -101,7 +102,7 @@ export default function BookmarkCreationForm({
             <Input
               id={`${formId}-url`}
               type="url"
-              name="url"
+              name={FIELD_NAMES.url}
               required
               value={url}
               onChange={event => setUrl(event.target.value)}
@@ -124,17 +125,17 @@ export default function BookmarkCreationForm({
             <Input
               id={`${formId}-title`}
               type="text"
-              name="title"
+              name={FIELD_NAMES.title}
               value={title}
               onChange={event => setTitle(event.target.value)}
             />
           </FormItem>
 
           <FormItem>
-            <Label htmlFor={`${formId}-setDescription`}>説明</Label>
+            <Label htmlFor={`${formId}-description`}>説明</Label>
             <Textarea
               id={`${formId}-description`}
-              name="description"
+              name={FIELD_NAMES.description}
               cols={50}
               rows={8}
               value={description}
@@ -153,23 +154,29 @@ export default function BookmarkCreationForm({
             >
               画像
             </Label>
+
             <ImageUploader
               id={`${formId}-images`}
               ref={imageUploaderRef}
               files={images}
-              onDrop={files => setImages(files)}
+              previewSrc={imagePreview}
+              onDrop={files => {
+                setImages(files);
+                setImagePreview(URL.createObjectURL(files[0]));
+              }}
             />
           </FormItem>
 
           <FormItem className="py-2">
+            <Button type="submit" disabled={disable}>
+              登録する
+            </Button>
+
             <Message
               message={message}
               handleClose={() => setMessage('')}
               variant="error"
             />
-            <Button type="submit" disabled={disable}>
-              登録する
-            </Button>
           </FormItem>
         </FormStack>
       </form>

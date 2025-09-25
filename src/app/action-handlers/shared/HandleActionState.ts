@@ -1,17 +1,4 @@
-export type StateIO<Input = unknown, Result = unknown, ErrorCode = string> =
-  | {
-      status: 'default';
-    }
-  | {
-      status: 'error';
-      input: Input;
-      errorCode?: ErrorCode;
-    }
-  | {
-      status: 'success';
-      input?: Input;
-      result?: Result;
-    };
+import type { ActionState } from './ActionState';
 
 /**
  * `useActionState` に渡すアクションの実装型
@@ -43,7 +30,7 @@ export type StateIO<Input = unknown, Result = unknown, ErrorCode = string> =
  * )
  * ```
  */
-export type HandleActionState<State extends StateIO, Payload> = (
+export type HandleActionState<State extends ActionState, Payload> = (
   state: State,
   payload: Payload,
 ) => Promise<State>;

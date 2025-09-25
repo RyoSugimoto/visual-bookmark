@@ -5,12 +5,12 @@ import type z from 'zod';
 import { ConfirmDialog, useConfirm } from '@/components/common/confirm-dialog';
 import type { ogpDataSchema } from '@/schema';
 import { fetcher } from '@/utils/fetcher';
+import type { FetcherResult } from '@/utils/fetcher/IFetcher';
 
 type OgpData = z.infer<typeof ogpDataSchema>;
 
 type OgpFetcherProps = {
   url: string;
-  getUrl(): string;
   /** 適用前に確認ダイアログを表示する条件 */
   toConfirm?(): boolean;
   onSuccess?(ogpData: OgpData): void;
@@ -22,7 +22,6 @@ type OgpFetcherProps = {
 
 export default function OgpFetcher({
   url,
-  getUrl,
   toConfirm = () => false,
   onSuccess,
   onError,
@@ -53,9 +52,18 @@ export default function OgpFetcher({
         <button
           className={`text-link underline p-0 border-0 bg-none inline-block disabled:opacity-50 text-sm`}
           type="button"
-          disabled={isPending}
+          disabled={isPending || !url}
           onClick={async event => {
             event.preventDefault();
+
+            if (!url) {
+              if (typeof onError === 'function') {
+                onError('URLを入力してください。');
+              }
+
+              setStatusMessage('URLを入力してください。');
+              return;
+            }
 
             setStatusMessage('');
             setHasError(false);
@@ -71,17 +79,20 @@ export default function OgpFetcher({
             setStatusMessage('情報を取得中...');
 
             try {
-              const result = await fetcher.get<OgpData>(endpoint, {
-                params: { url },
-                timeout,
-              });
+              const result = await fetcher.get<FetcherResult<OgpData>>(
+                endpoint,
+                {
+                  params: { url },
+                  timeout,
+                },
+              );
 
               if (!result.success) {
                 throw new Error();
               }
 
               if (typeof onSuccess === 'function') {
-                onSuccess(result.data);
+                onSuccess(result.data.data);
               }
 
               setStatusMessage('');

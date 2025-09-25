@@ -25,7 +25,15 @@ export const requestDataSchema = z.object({
   [FIELD_NAMES.url]: z.url(),
   [FIELD_NAMES.title]: z.string().optional(),
   [FIELD_NAMES.description]: z.string().optional(),
-  [FIELD_NAMES.imageFile]: z.instanceof(File).optional(),
+  [FIELD_NAMES.imageFile]: z
+    .instanceof(File)
+    .refine(
+      file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+      {
+        message: '対応している形式は、JPEG、PNG、WebPのみです。',
+      },
+    )
+    .optional(),
 });
 
 export type RequestData = z.infer<typeof requestDataSchema>;

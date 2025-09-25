@@ -1,3 +1,4 @@
+import '@/di';
 import { type NextRequest, NextResponse } from 'next/server';
 import { createBookmark } from '@/actions/bookmark/bookmark-creation-action/create-bookmark';
 
