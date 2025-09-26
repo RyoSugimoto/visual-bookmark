@@ -35,7 +35,7 @@ export default async function Page({ params }) {
           url,
           title,
           description,
-          imageUrl: imageUrl ? imageUrl : generateBookmarkImageUrl(imageId),
+          imageUrl: imageUrl ? imageUrl : '',
         }}
       />
     </div>

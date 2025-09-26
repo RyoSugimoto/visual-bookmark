@@ -29,7 +29,7 @@ type BookmarkUpdateFormProps = {
     url: string;
     title: string;
     description: string;
-    imageUrl: string;
+    imageUrl?: string;
   };
 };
 
@@ -47,8 +47,8 @@ export default function BookmarkUpdateForm({
   const [imageCommand, setImageCommand] = useState<
     'noop' | 'delete' | 'change'
   >('noop');
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    init.imageUrl,
+  const [imageUrl, setImageUrl] = useState<string>(
+    init.imageUrl ? init.imageUrl : null,
   );
 
   /** `ImageUploader` 内の画像選択ダイアログを表示するボタンへの参照 */
@@ -66,6 +66,7 @@ export default function BookmarkUpdateForm({
         onSubmit={async event => {
           event.preventDefault();
 
+          setDisable(true);
           setMessage('送信中...');
 
           const formData = new FormData();
@@ -79,8 +80,6 @@ export default function BookmarkUpdateForm({
           if (0 < images.length) {
             formData.append(FIELD_NAMES.imageFile, images[0]);
           }
-
-          setDisable(true);
 
           const result = await fetcher.post('/api/bookmark-update', formData);
 
@@ -159,9 +158,9 @@ export default function BookmarkUpdateForm({
               onDrop={files => {
                 setImages(files);
                 setImageCommand('change');
-                setImagePreview(URL.createObjectURL(files[0]));
+                setImageUrl(URL.createObjectURL(files[0]));
               }}
-              previewSrc={imagePreview}
+              previewSrc={imageUrl}
             ></ImageUploader>
 
             <div className="grid grid-cols-2 gap-4">
@@ -172,7 +171,7 @@ export default function BookmarkUpdateForm({
                   onClick={() => {
                     setImages([]);
                     setImageCommand('noop');
-                    setImagePreview(init.imageUrl);
+                    setImageUrl(init.imageUrl);
                   }}
                 >
                   <Undo size="1em" />
@@ -180,14 +179,14 @@ export default function BookmarkUpdateForm({
                 </Button>
               )}
 
-              {imagePreview && (
+              {imageUrl && (
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => {
                     setImages([]);
                     setImageCommand('delete');
-                    setImagePreview(null);
+                    setImageUrl(null);
                   }}
                 >
                   <Trash size="1em" />

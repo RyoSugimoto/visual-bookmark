@@ -64,6 +64,7 @@ export default function BookmarkCreationForm({
         onSubmit={async event => {
           event.preventDefault();
 
+          setDisable(true);
           setMessage('送信中...');
 
           const formData = new FormData();
@@ -75,8 +76,6 @@ export default function BookmarkCreationForm({
           if (0 < images.length) {
             formData.append(FIELD_NAMES.imageFile, images[0]);
           }
-
-          setDisable(true);
 
           const result = await fetcher.post<PostReturn>(
             '/api/bookmark-creation',

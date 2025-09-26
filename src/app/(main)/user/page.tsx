@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/actions/auth/session-user-action/get-session-user';
 import LogoutButton from '@/app/shared/components/auth/LogoutButton';
+import { Separator } from '@/components/lib/shadcn/ui/separator';
+import { createUuidV4 } from '@/utils';
+import UserInformation from './UserInformation';
 
 export default async function Page() {
   const response = await getSessionUser();
@@ -9,26 +12,24 @@ export default async function Page() {
     redirect(`/login`);
   }
 
-  const { data } = response;
+  const {
+    data: { email, name, password },
+  } = response;
 
   return (
-    <div>
-      <h1 className="text-2xl mb-8">アカウント情報</h1>
+    <>
+      <UserInformation
+        email={email}
+        userName={name}
+        formId={createUuidV4()}
+        hasCredentials={!!password}
+      />
 
-      <dl className="grid gap-4">
-        <div>
-          <dt className="mb-1">ユーザー名</dt>
-          <dd>{data.name || '（未設定）'}</dd>
-        </div>
-        <div>
-          <dt className="mb-1">メールアドレス</dt>
-          <dd>{data.email}</dd>
-        </div>
-      </dl>
+      <Separator className="mt-8" />
 
       <div className="mt-8">
         <LogoutButton />
       </div>
-    </div>
+    </>
   );
 }

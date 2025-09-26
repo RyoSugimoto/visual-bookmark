@@ -21,8 +21,8 @@ export default function LogoutButton() {
   return (
     <div>
       <form action={action}>
-        <Button type="submit" disabled={isPending}>
-          ログアウト
+        <Button type="submit" disabled={isPending} variant="outline">
+          ログアウトする
         </Button>
       </form>
 
