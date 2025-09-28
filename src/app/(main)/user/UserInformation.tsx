@@ -2,11 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import type { ActionResponse } from '@/actions/shared';
 import { Message } from '@/components/common';
 import { FormItem, FormStack } from '@/components/form';
 import { Button } from '@/components/lib/shadcn/ui/button';
 import { Input } from '@/components/lib/shadcn/ui/input';
 import { Label } from '@/components/lib/shadcn/ui/label';
+import type { ResponseData } from '@/schema/bookmark/bookmark-update-schema';
 import {
   ERROR_CODES,
   type ErrorCode,
@@ -21,8 +23,11 @@ type UserInformationProps = {
   hasCredentials: boolean;
 };
 
+type UserUpdateResponse = ActionResponse<ResponseData, ErrorCode>;
+
 const ERROR_MESSAGES: Record<ErrorCode, string> = {
   'user-update-failure': '更新に失敗しました。',
+  'user-update-input-omission': '入力に不備があります。',
 };
 
 export default function UserInformation(props: UserInformationProps) {
@@ -50,119 +55,115 @@ export default function UserInformation(props: UserInformationProps) {
   }
 
   return (
-    <>
-      <h1 className="text-xl mb-8">アカウント情報</h1>
+    <div>
+      {(editable && (
+        <form
+          onSubmit={async event => {
+            event.preventDefault();
 
-      <div>
-        {(editable && (
-          <form
-            onSubmit={async event => {
-              event.preventDefault();
+            setDisabled(true);
 
-              setDisabled(true);
+            const formData = new FormData();
 
-              const formData = new FormData();
+            formData.append(FIELD_NAMES.currentEmail, props.email);
+            formData.append(FIELD_NAMES.email, email);
+            formData.append(FIELD_NAMES.name, userName);
 
-              formData.append(FIELD_NAMES.email, email);
-              formData.append(FIELD_NAMES.name, userName);
+            const { success, data } = await fetcher.post<UserUpdateResponse>(
+              `/api/user-update`,
+              formData,
+            );
 
-              // const response = await fetcher.post(
-              //   `/api/user-update/`,
-              //   formData,
-              // );
-              const { success, data } = {
-                success: true,
-                data: {
-                  data: Object.fromEntries(formData.entries()),
-                  errorCode: ERROR_CODES.failure,
-                },
-              };
+            setDisabled(false);
 
-              setDisabled(false);
+            if (!success) {
+              setMessage(ERROR_CODES.failure);
 
-              if (!success) {
-                console.log(data.data);
+              return;
+            }
 
-                setMessage(
-                  data.errorCode
-                    ? ERROR_MESSAGES[data.errorCode]
-                    : ERROR_CODES.failure,
-                );
+            if (!data.success) {
+              setMessage(
+                data.errorCode
+                  ? ERROR_MESSAGES[data.errorCode]
+                  : ERROR_CODES.failure,
+              );
 
-                return;
-              }
+              return;
+            }
 
-              setEditable(false);
-              router.refresh();
-            }}
-          >
-            <FormStack>
-              <FormItem>
-                <Label>ユーザー名</Label>
-                <Input
-                  type="text"
-                  value={userName}
-                  onChange={event => setUserName(event.target.value)}
-                />
-              </FormItem>
-              <FormItem>
-                <Label>メールアドレス</Label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={event => setEmail(event.target.value)}
-                />
-              </FormItem>
-              <FormItem>
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" disabled={disabled}>
-                    更新する
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={event => {
-                      event.preventDefault();
-
-                      setEditable(false);
-                    }}
-                    variant="outline"
-                  >
-                    更新を取り消す
-                  </Button>
-                </div>
-
-                <Message message={message} variant="error" />
-              </FormItem>
-            </FormStack>
-          </form>
-        )) || (
-          <div>
-            <dl className="grid gap-4">
-              <Row>
-                <Title>ユーザー名</Title>
-                <Data>{props.userName || '未設定'}</Data>
-              </Row>
-              <Row>
-                <Title>メールアドレス</Title>
-                <Data>{props.email}</Data>
-              </Row>
-              <div className="mt-6">
+            setEditable(false);
+            router.refresh();
+          }}
+        >
+          <FormStack>
+            <FormItem>
+              <Label>ユーザー名</Label>
+              <Input
+                type="text"
+                value={userName}
+                onChange={event => setUserName(event.target.value)}
+              />
+            </FormItem>
+            <FormItem>
+              <Label>メールアドレス</Label>
+              <Input
+                type="email"
+                value={email}
+                onChange={event => setEmail(event.target.value)}
+              />
+            </FormItem>
+            <FormItem>
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" disabled={disabled}>
+                  変更を保存する
+                </Button>
                 <Button
                   type="button"
                   onClick={event => {
                     event.preventDefault();
 
-                    setEditable(true);
+                    setEditable(false);
+                    setUserName(props.userName);
+                    setEmail(props.email);
                   }}
                   variant="outline"
                 >
-                  アカウント情報を編集する
+                  変更を破棄する
                 </Button>
               </div>
-            </dl>
-          </div>
-        )}
-      </div>
-    </>
+
+              <Message message={message} variant="error" />
+            </FormItem>
+          </FormStack>
+        </form>
+      )) || (
+        <div>
+          <dl className="grid gap-4">
+            <Row>
+              <Title>ユーザー名</Title>
+              <Data>{props.userName || '未設定'}</Data>
+            </Row>
+            <Row>
+              <Title>メールアドレス</Title>
+              <Data>{props.email}</Data>
+            </Row>
+            <div className="mt-6">
+              <Button
+                type="button"
+                onClick={event => {
+                  event.preventDefault();
+
+                  setEditable(true);
+                }}
+                variant="outline"
+              >
+                基本情報を編集する
+              </Button>
+            </div>
+          </dl>
+        </div>
+      )}
+    </div>
   );
 }
