@@ -16,6 +16,10 @@ export const getBookmarkImageUrl: Action<string, string, string> = async (
 ) => {
   const res = ActionResponse.createResponseObject<string, string>;
 
+  if (!fileId) {
+    return res(false, null);
+  }
+
   try {
     const sessionUserService = container.resolve(SessionUserService);
     const user = await sessionUserService.execute();

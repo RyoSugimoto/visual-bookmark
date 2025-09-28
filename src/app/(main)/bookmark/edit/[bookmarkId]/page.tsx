@@ -1,6 +1,6 @@
 import { findBookmarkById } from '@/actions/bookmark/bookmark-find-action/find-bookmark-by-id';
 import { getBookmarkImageUrl } from '@/actions/storage/bookmark-image-url-action/get-bookmark-image-url';
-import { createUuidV4, generateBookmarkImageUrl } from '@/utils';
+import { createUuidV4 } from '@/utils';
 import BookmarkUpdateForm from '../BookmarkUpdateForm';
 
 export default async function Page({ params }) {
