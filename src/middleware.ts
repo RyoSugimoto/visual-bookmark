@@ -1,7 +1,7 @@
 import '@/di/register-common';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { getSessionUser } from './actions/auth/session-user-action/get-session-user';
+import { ensureAuthenticated } from './actions/auth/authentication-verification-action/ensure-authenticated';
 
 /**
  * ログイン時のみアクセスできるパス
@@ -17,27 +17,25 @@ export async function middleware(request: NextRequest) {
   console.log(`[Middleware] Begin middleware`);
 
   const { pathname } = request.nextUrl;
-  const actionResponse = await getSessionUser();
-  const user = actionResponse.data;
+  const isAuthenticated = await ensureAuthenticated();
 
-  console.log(`[Middleware] Pathname: "${pathname}"`);
-  console.log(`[Middleware] Authenticated: ${user !== null}`);
+  console.log(`[Middleware] Authenticated: ${isAuthenticated}`);
 
   if (
-    !user &&
+    !isAuthenticated &&
     prefixesForAuthenticated.some(prefix => pathname.startsWith(prefix))
   ) {
     console.log(`[Middleware] Not authenticated on a functional page`);
     return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
-  if (!user && pathname === '/') {
+  if (!isAuthenticated && pathname === '/') {
     console.log(`[Middleware] Not authenticated on the root"`);
     return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
   if (
-    user &&
+    isAuthenticated &&
     prefixesForNotAuthenticated.some(prefix => pathname.startsWith(prefix))
   ) {
     console.log(`Middleware: "has session & login or register"`);
