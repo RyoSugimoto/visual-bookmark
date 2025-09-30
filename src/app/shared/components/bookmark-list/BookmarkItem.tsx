@@ -41,69 +41,29 @@ export default function BookmarkItem({
 
   return (
     <CardListItem gap="sm" className="relative">
-      <div className="w-full">
-        {((imageId || imageUrl) && (
-          <Image
-            src={imageUrl ? imageUrl : generateBookmarkImageUrl(imageId)}
-            alt=""
-            width={480}
-            height={480}
-            unoptimized
-            className="w-full aspect-square object-cover"
-          />
-        )) || <ImagePlaceholder>{title}</ImagePlaceholder>}
-      </div>
-
-      <div className="grid gap-4">
-        <h3 className="text-md font-semibold">{title}</h3>
-        <p className="text-sm">{description}</p>
-        <p className="text-xs break-all">{url}</p>
-        <div className="z-20 flex gap-2">
-          <Link
-            href={`/bookmark/edit/${id}`}
-            className="flex items-center gap-1"
-          >
-            <Edit size="1em" /> 編集
-          </Link>
-          <form
-            onSubmit={async event => {
-              event.preventDefault();
-
-              const formData = new FormData();
-              formData.append(FIELD_NAMES.id, id);
-
-              setDeleting(true);
-
-              const result = await fetcher.post(
-                `/api/bookmark-deletion`,
-                formData,
-              );
-
-              if (!result.success) {
-                handleDeletionError({
-                  message: ERROR_MESSAGES[result.data.errorCode],
-                });
-              }
-            }}
-          >
-            <button
-              type="submit"
-              disabled={deleting}
-              className="flex items-center gap-1"
-            >
-              <Trash size="1em" /> 削除
-            </button>
-          </form>
+      <div className="grid gap-2">
+        <Link
+          href={`/bookmark/single/${id}`}
+          className="flex items-center gap-1"
+        >
+          {((imageId || imageUrl) && (
+            <Image
+              src={imageUrl ? imageUrl : generateBookmarkImageUrl(imageId)}
+              alt=""
+              title={title}
+              width={480}
+              height={480}
+              unoptimized
+              className="w-full aspect-square object-cover object-center"
+            />
+          )) || <ImagePlaceholder>{title}</ImagePlaceholder>}
+        </Link>
+        <div>
+          <h2 className="text-sm px-2">
+            <Link href={`/bookmark/single/${id}`}>{title}</Link>
+          </h2>
         </div>
       </div>
-
-      <a
-        className="absolute inset-0 z-10 focus-within:border-2 border-link"
-        href={url}
-        target="_blank"
-      >
-        <span className="sr-only">ブックマークされたページを開く</span>
-      </a>
     </CardListItem>
   );
 }

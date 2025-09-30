@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 
-type GapSize = 'none' | 'sm' | 'default' | 'md' | 'lg';
+type GapSize = 'none' | 'xs' | 'sm' | 'default' | 'md' | 'lg';
 
 type CardListProps = PropsWithChildren<{
   className?: string;
@@ -9,19 +9,21 @@ type CardListProps = PropsWithChildren<{
 }>;
 
 const gapsX: Record<GapSize, string> = {
-  none: 'gap-0',
-  sm: 'gap-2',
-  default: 'gap-4',
-  md: 'gap-6',
-  lg: 'gap-8',
+  none: 'gap-x-0',
+  xs: 'gap-x-1',
+  sm: 'gap-x-2',
+  default: 'gap-x-4',
+  md: 'gap-x-6',
+  lg: 'gap-x-8',
 } as const;
 
 const gapsY: Record<GapSize, string> = {
-  none: 'gap-0',
-  sm: 'gap-2',
-  default: 'gap-4',
-  md: 'gap-6',
-  lg: 'gap-8',
+  none: 'gap-y-0',
+  xs: 'gap-y-1',
+  sm: 'gap-y-2',
+  default: 'gap-y-4',
+  md: 'gap-y-6',
+  lg: 'gap-y-8',
 } as const;
 
 export default function CardList({

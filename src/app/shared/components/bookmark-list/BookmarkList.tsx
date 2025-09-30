@@ -13,7 +13,7 @@ export default function BookmarkList({ bookmarks }: BookmarkListProps) {
   return (
     <>
       <Toaster />
-      <CardList className="">
+      <CardList gapX="xs" gapY="default">
         {bookmarks.map(async bookmark => {
           return (
             <BookmarkItem

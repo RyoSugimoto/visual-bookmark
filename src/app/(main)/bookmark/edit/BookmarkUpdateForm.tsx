@@ -1,17 +1,24 @@
 'use client';
 
-import { Trash2 as Trash, Undo2 as Undo } from 'lucide-react';
+import { Check, Trash2 as Trash, Undo2 as Undo } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import type { ActionResponseObject } from '@/actions/shared';
 import { OgpFetcher } from '@/app/shared/components/ogp-fetcher';
 import { Message } from '@/components/common';
 import ImageUploader from '@/components/common/image-uploader/ImageUploader';
+import Button from '@/components/common/ui/button';
 import { FormItem, FormStack, FormWrapper } from '@/components/form';
+import {
+  FIELD_NAMES as DELETION_FIELD_NAMES,
+  type ErrorCode as DeletionErrorCode,
+  type ResponseData as DeletionResponseData,
+} from '@/schema/bookmark/bookmark-deletion-schema';
 import {
   type ErrorCode,
   FIELD_NAMES,
+  type ResponseData,
 } from '@/schema/bookmark/bookmark-update-schema';
-import { Button } from '@/shadcn/button';
 import { Input } from '@/shadcn/input';
 import { Label } from '@/shadcn/label';
 import { Textarea } from '@/shadcn/textarea';
@@ -20,6 +27,13 @@ import { fetcher } from '@/utils/fetcher';
 const ERROR_MESSAGES: Record<ErrorCode, string> = {
   'bookmark-update-input-omission': '入力内容が不正です。',
   'bookmark-update-failure': 'ブックマークの更新に失敗しました。',
+};
+
+const DELETION_ERROR_MESSAGES: Record<DeletionErrorCode, string> = {
+  'bookmark-deletion-failure': 'ブックマークの削除に失敗しました。',
+  'bookmark-deletion-input-omission': 'データに不備があります。',
+  'bookmark-deletion-not-found': '対象が削除済みの可能性があります。',
+  'bookmark-deletion-unauthorized': '削除する権限がありません。',
 };
 
 type BookmarkUpdateFormProps = {
@@ -56,6 +70,7 @@ export default function BookmarkUpdateForm({
 
   /** エラーメッセージ */
   const [message, setMessage] = useState<string>();
+  const [deletionMessage, setDeletionMessage] = useState<string>();
 
   /** NextRouter */
   const router = useRouter();
@@ -81,14 +96,19 @@ export default function BookmarkUpdateForm({
             formData.append(FIELD_NAMES.imageFile, images[0]);
           }
 
-          const result = await fetcher.post('/api/bookmark-update', formData);
+          const result = await fetcher.post<
+            ActionResponseObject<ResponseData, ErrorCode>
+          >('/api/bookmark-update', formData);
 
           setDisable(false);
 
           if (result.success) {
             router.push(`/`);
           } else {
-            setMessage(ERROR_MESSAGES['bookmark-update-failure']);
+            setMessage(
+              ERROR_MESSAGES[result.data?.errorCode] ||
+                ERROR_MESSAGES['bookmark-update-failure'],
+            );
           }
         }}
       >
@@ -198,12 +218,48 @@ export default function BookmarkUpdateForm({
 
           <FormItem className="py-2">
             <Button type="submit" disabled={disable}>
-              更新する
+              <Check size="1em" /> ブックマークを更新する
             </Button>
 
             <Message
               message={message}
               handleClose={() => setMessage('')}
+              variant="error"
+            />
+          </FormItem>
+
+          <FormItem>
+            <Button
+              type="button"
+              disabled={disable}
+              variant="destructive"
+              onClick={async event => {
+                event.preventDefault();
+
+                const formData = new FormData();
+
+                formData.append(DELETION_FIELD_NAMES.id, bookmarkId);
+
+                const result = await fetcher.post<
+                  ActionResponseObject<DeletionResponseData, DeletionErrorCode>
+                >(`/bookmark-deletion`, formData);
+
+                if (result.success) {
+                  router.push(`/`);
+                }
+
+                setDeletionMessage(
+                  DELETION_ERROR_MESSAGES[result.data?.errorCode] ||
+                    DELETION_ERROR_MESSAGES['bookmark-deletion-failure'],
+                );
+              }}
+            >
+              <Trash size="1em" /> ブックマークを削除する
+            </Button>
+
+            <Message
+              message={deletionMessage}
+              handleClose={() => setDeletionMessage('')}
               variant="error"
             />
           </FormItem>
